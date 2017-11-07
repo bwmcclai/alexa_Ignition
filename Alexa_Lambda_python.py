@@ -281,130 +281,16 @@ def lambda_handler(event, context):
         return on_launch(event['request'], event['session'])
 
 def getHomeScreen():
-    response = urllib2.urlopen(baseURL + "onLaunch",context=ctx)
-    ignitionResponse = json.load(response)
-    print(ignitionResponse["card_title"])
-
-    card_title = ignitionResponse["card_title"]
-    title = ignitionResponse["title"]
-    text = ignitionResponse["text"]
-    outputSpeech = ignitionResponse["outputSpeech"]
-
-    homeScreenResponse = {
-	  "version": "1.0",
-	  "response": {
-		"card": None,
-		"outputSpeech": {
-		  "type": "PlainText",
-		  "text": outputSpeech
-		},
-		"reprompt": {
-		  "outputSpeech": {
-			"type": "PlainText",
-			"text": "How can I help you?"
-		  }
-		},
-		"directives": [
-		  {
-			"type": "Display.RenderTemplate",
-			"template": {
-			  "type": "BodyTemplate3",
-			  "token": "list_template_one",
-			  "title": card_title,
-			  "backgroundImage": {
-					"sources": [
-					  {
-						"url": IgnitionBackground1
-					  }
-					],
-					"contentDescription": "Ignition Background"
-				  },
-			  "textContent": {
-				  "primaryText": {
-					"type": "RichText",
-					"text": title + text
-				  }
-				},
-				"image": {
-				  "contentDescription": "Mount St. Helens landscape",
-				  "sources": [
-					{
-					  "url": "http://www.flexwareinnovation.com/wp-content/uploads/2016/10/ignition-the-new-scada-300x300.jpg"
-					}
-				  ]
-				}
-			}
-		  }
-		],
-		"shouldEndSession": False,
-		"askOrTell": ":tell",
-	  }
-	}
+    response = urllib2.urlopen(baseURL + "getHomeScreen",context=ctx)
+    homeScreenResponse = json.load(response)   
 	
     return homeScreenResponse
 
 def goBack():
     response = urllib2.urlopen(baseURL + "goBack",context=ctx)
-    ignitionResponse = json.load(response)
-    print(ignitionResponse["card_title"])
-
-    card_title = ignitionResponse["card_title"]
-    title = ignitionResponse["title"]
-    text = ignitionResponse["text"]
-    outputSpeech = ignitionResponse["outputSpeech"]
-
-    homeScreenResponse = {
-	  "version": "1.0",
-	  "response": {
-		"card": None,
-		"outputSpeech": {
-		  "type": "PlainText",
-		  "text": outputSpeech
-		},
-		"reprompt": {
-		  "outputSpeech": {
-			"type": "PlainText",
-			"text": "How can I help you?"
-		  }
-		},
-		"directives": [
-		  {
-			"type": "Display.RenderTemplate",
-			"template": {
-			  "type": "BodyTemplate3",
-			  "token": "list_template_one",
-			  "title": card_title,
-			  "backgroundImage": {
-					"sources": [
-					  {
-						"url": IgnitionBackground1
-					  }
-					],
-					"contentDescription": "Ignition Background"
-				  },
-			  "textContent": {
-				  "primaryText": {
-					"type": "RichText",
-					"text": title + text
-				  }
-				},
-				"image": {
-				  "contentDescription": "Mount St. Helens landscape",
-				  "sources": [
-					{
-					  "url": "http://www.flexwareinnovation.com/wp-content/uploads/2016/10/ignition-the-new-scada-300x300.jpg"
-					}
-				  ]
-				}
-			}
-		  }
-		],
-		"shouldEndSession": False,
-		"askOrTell": ":tell",
-	  }
-	}
-	
-    return homeScreenResponse
+    goBackResponse = json.load(response)
+    
+    return goBackResponse
 
 def showLineDetails(intent,session):
 	print(intent['slots'])
@@ -413,7 +299,6 @@ def showLineDetails(intent,session):
 		speech_output = "I now know the line name is " + lineName + ". That is all I can do for now. haha"
         
 	else:
-		#speech_output = "I dont know what line that is."
 		speech_output = "I will read the info now " + str(intent['slots'])
 	
 	lineDetailsResponse = {
@@ -437,111 +322,35 @@ def showLineDetails(intent,session):
 
 def elementSelected(token):
 
-	speech_output = "I can tell you clicked on " + token + ".  I dont know what to do next."
-	
-	lineDetailsResponse = {
-	  "version": "1.0",
-	  "response": {
-		"card": None,
-		"outputSpeech": {
-		  "type": "PlainText",
-		  "text": speech_output
-		},
-		"reprompt": {
-		  "outputSpeech": {
-			"type": "PlainText",
-			"text": "How can I help you?"
+	if token == 'productionStatus':
+		return showProductionStatus()
+	else:
+
+		speech_output = "I can tell you clicked on " + token + ".  I dont know what to do next."
+		
+		lineDetailsResponse = {
+		  "version": "1.0",
+		  "response": {
+			"card": None,
+			"outputSpeech": {
+			  "type": "PlainText",
+			  "text": speech_output
+			},
+			"reprompt": {
+			  "outputSpeech": {
+				"type": "PlainText",
+				"text": "How can I help you?"
+			  }
+			}
 		  }
 		}
-	  }
-	}
-	
-	return lineDetailsResponse
+		
+		return lineDetailsResponse
 
 def showProductionStatus():
 
+	response = urllib2.urlopen(baseURL + "showProductionStatus",context=ctx)
+	productionStatusResponse = json.load(response)
 
-	productionStatusResponse = {
-	  "version": "1.0",
-	  "response": {
-		"card": None,
-		"outputSpeech": {
-		  "type": "PlainText",
-		  "text": "What line would you like to hear more info about?"
-		},
-		"directives": [
-		  {
-			"type": "Display.RenderTemplate",
-			"template": {
-			  "type": "ListTemplate1",
-			"backButton": "VISIBLE",
-			  "token": "productionStatus",
-			  "title": "Production Status",
-			  "backgroundImage": {
-					"sources": [
-					  {
-						"url": IgnitionBackground1
-					  }
-					],
-					"contentDescription": "Production Status"
-				  },
-			  "listItems": [
-				{
-				  "token": "Line 1",
-				  "image": {
-					"sources": [
-					  {
-						"url": "https://cdn0.iconfinder.com/data/icons/round-ui-icons/512/tick_green.png"
-					  }
-					],
-					"contentDescription": "Supreme Large Pan Pizza"
-				  },
-				  "textContent": {
-					"primaryText": {
-					  "type": "RichText",
-					  "text": "<font size='7'>Line 1</font> <br/><font size='3'> Product A</font>"
-					},
-					"secondaryText": {
-					  "type": "PlainText",
-					  "text": "Running"
-					},
-					"tertiaryText": {
-					  "type": "PlainText", 
-					  "text": "300 units"
-					}
-				  }
-				},
-				{
-				  "token": "Line 2",
-				  "image": {
-					"sources": [
-					  {
-						"url": "https://www.shareicon.net/download/2015/09/10/98920_empty_512x512.png"
-					  }
-					],
-					"contentDescription": "Line 2"
-				  },
-				  "textContent": {
-						"primaryText": {
-						  "type": "RichText",
-						  "text": "<font size='7'>Line 2</font> <br/><font size='3'> Product B</font>"
-						},
-						"secondaryText": {
-						  "text": "Stopped",
-						  "type": "PlainText"
-						},
-						"tertiaryText": {
-						  "text": "300 Units",
-						  "type": "PlainText"
-						}
-					}
-				}
-			  ]
-			}
-		  }
-		],
-		"shouldEndSession": False
-	  }
-	}
 	
 	return productionStatusResponse
